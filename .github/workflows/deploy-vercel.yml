@@ -1,0 +1,49 @@
+# Vercel Deployment Workflow
+#
+# This workflow automatically deploys your project to Vercel upon a push to the main branch.
+#
+# IMPORTANT: Before using this workflow, you must:
+#
+# 1. Install the Vercel CLI on your local machine:
+#    npm install -g vercel
+#
+# 2. Link your local project directory to Vercel:
+#    In your project's root directory, run `vercel link`.
+#    Follow the prompts to connect to a new or existing Vercel project.
+#    This will create a `.vercel` directory in your project.
+#
+# 3. Commit the `.vercel` directory to your repository:
+#    git add .vercel
+#    git commit -m "Add Vercel project configuration"
+#    git push
+#
+# 4. Add your VERCEL_TOKEN as a secret in your GitHub repository:
+#    - Go to your repository's Settings > Secrets and variables > Actions.
+#    - Create a new secret named VERCEL_TOKEN.
+#    - Generate a token from your Vercel Account Settings: https://vercel.com/account/tokens
+#
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
